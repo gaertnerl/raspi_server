@@ -1,7 +1,7 @@
 from flask import Flask
 from .config import get_config
 from .database import db
-from .blueprints import auth
+from .blueprints import auth, users
 
 
 def create_app(config_name='dev_config'):
@@ -16,10 +16,12 @@ def create_app(config_name='dev_config'):
     # assign app to the database
     # and create all tables.
     db.init_app(app)
-    db.create_all()
+    with app.app_context():
+        db.create_all() 
 
     # register blueprints
     app.register_blueprint(auth.bp)
+    app.register_blueprint(users.bp)
 
     @app.route('/ping')
     def pong():

@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-
+import re
 
 db = SQLAlchemy()
 
@@ -12,4 +12,8 @@ class User(db.Model):
     pw_hash = db.Column(db.String(80))
 
 
+def check_allowed_characters(string):
+    if re.match('^[A-Za-z0-9_-]*$', string):
+        return True
 
+    return False
