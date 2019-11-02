@@ -1,33 +1,28 @@
 """
-This module contains a collection
-of configs. Flask app can be started
-with one of the configs.
+This module contains a selection of
+configs. The app factory can create
+a new app with one of the configs.
 """
-
 import os
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+config_path = os.path.dirname(__file__)
 
-# config parameters
-DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
-DEFAULT_KEY = 'default_key'
+# default configuration settings
+DEFAULT_SECRET_KEY = 'secret'
+DEFAULT_SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(os.path.join(config_path, 'database.db'))
 
 
 class Config:
-    """Base class for each config"""
 
-    SECRET_KEY = DEFAULT_KEY
-    SQLALCHEMY_DATABASE_URI = DATABASE_URI
+    SECRET_KEY = DEFAULT_SECRET_KEY
+    SQLALCHEMY_DATABASE_URI = DEFAULT_SQLALCHEMY_DATABASE_URI
 
 
 class DevConfig(Config):
-    """Config for development purposes."""
+
     DEBUG = True
 
 
 def get_config(config_name):
 
-    if config_name == 'dev' : return DevConfig
-    if config_name == 'default' : return DevConfig
-
-
+    if config_name == 'dev_config': return DevConfig()

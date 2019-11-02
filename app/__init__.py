@@ -1,17 +1,28 @@
 from flask import Flask
-from flask_sqlalchemy import  SQLAlchemy
-import config
-
-# choose a config
-config_name = 'default'
+from .config import get_config
+from .database import db
+from .blueprints import auth
 
 
-db = SQLAlchemy()
+def create_app(config_name='dev_config'):
+    # Create an app with the given
+    # configuration.
+    #
+    # config_name: String, config that should be used
 
-app = Flask(__name__)
+    app = Flask(__name__)
+    app.config.from_object(get_config(config_name))
 
-config = config.get_config(config_name)
+    # assign app to the database
+    # and create all tables.
+    db.init_app(app)
+    db.create_all()
 
-app.config.from_object(config)
+    # register blueprints
+    app.register_blueprint(auth.bp)
 
-db.init_app(app)
+    @app.route('/ping')
+    def pong():
+        return 'pong', 200
+
+    return app
