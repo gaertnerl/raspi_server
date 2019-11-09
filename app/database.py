@@ -10,6 +10,14 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), unique=True)
     pw_hash = db.Column(db.String(80))
+    admin = db.Column(db.Boolean, default=False)
+    master_admin = db.Column(db.Boolean, default=False)
+
+
+class Circuit(db.Model):
+
+    __tablename__ = 'circuit'
+    encoding = db.Column(db.Text)
 
 
 def check_allowed_characters(string):

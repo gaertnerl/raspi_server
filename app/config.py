@@ -5,6 +5,7 @@ a new app with one of the configs.
 """
 import os
 
+
 config_path = os.path.dirname(__file__)
 
 # default configuration settings
@@ -25,4 +26,5 @@ class DevConfig(Config):
 
 def get_config(config_name):
 
-    if config_name == 'dev_config': return DevConfig()
+    if config_name == 'development': return DevConfig()
+
