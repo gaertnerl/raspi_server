@@ -78,7 +78,7 @@ def login():
     # if password matches database record, return new token
     if check_password_hash(user.pw_hash, auth.password):
         token = encode({
-            'user': 'auth.username',
+            'user': auth.username,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)},
             current_app.config['SECRET_KEY'])
 
