@@ -1,37 +1,53 @@
 from flask import Blueprint, request, jsonify
 from ..database import User
-from ..utilities.auth import decode_auth_token
+from ..utilities.auth import check_token
 
 bp = Blueprint('users', __name__, url_prefix='/users')
 
 
-@bp.route('/show_all', methods=['GET'])
-def get_users():
-    
-    token = request.headers.get('auth_token')
+@bp.route('/promote', methods=['POST'])
+@check_token
+def promote_user(user):
+    """
+    Promotes the user specified in username field of
+    http header to admin. The requesting user holding
+    the token has to be admin.
 
-    if not token:
-        return jsonify({'message': 'no token provided'}), 401
+    :param user: User Object returned from check_token decorator.
+    :return: Json{ message: String }, StatusCode:Int
+    """
+    if user.admin:
+        if request.headers['username']:
+            username = request.headers['username']
+            user = User.query.filter_by(username=username).first()
+            user.admin = True
+            return jsonify({'message': 'user promoted'}), 200
+        else:
+            return jsonify({'message': 'username not found'}), 404
 
-    token_data = decode_auth_token(token)
+    else:
+        return jsonify({'message': 'admin status required'}), 403
 
-    if not token_data[0]:
-        return jsonify({'message': 'Token expired or invalid'}), 401
 
-    username = token_data[1]
-    user = User.query.filter_by(username=username).first()
+@bp.route('/get_names', methods=['GET'])
+@check_token
+def get_users(user):
+    """
+    Returns a list of all users in a json object.
+    The requesting user holding the token has to be admin.
+
+    :param user: User Object returned from check_token decorator.
+    :return: Json{ users: List[users]}, StatusCode:Int
+    """
 
     if user.admin:
-        users = []
+        names = []
         users_found = User.query.all()
 
         for user in users_found:
-            user_data = {}
-            user_data['username'] = user.username,
-            user_data['password'] = user.pw_hash,
-            users.append(user_data)
+            names.append(user.username)
 
-        return jsonify({'users': users}), 200
+        return jsonify({'usersnames': names}), 200
 
     else:
-        return jsonify({'message': 'access denied, user is not admin'}), 403
+        return jsonify({'message': 'admin status required'}), 403
