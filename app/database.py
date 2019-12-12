@@ -14,12 +14,6 @@ class User(db.Model):
     master_admin = db.Column(db.Boolean, default=False)
 
 
-class Circuit(db.Model):
-
-    __tablename__ = 'circuit'
-    encoding = db.Column(db.Text)
-
-
 def check_allowed_characters(string):
     if re.match('^[A-Za-z0-9_-]*$', string):
         return True
