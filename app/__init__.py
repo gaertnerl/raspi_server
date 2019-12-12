@@ -1,17 +1,21 @@
 from flask import Flask
-from .config import get_config
-from .database import db
-from .blueprints import auth, users
+from .database import db, User
+from .blueprints import auth, users, development
+from werkzeug.security import generate_password_hash
 
 
-def create_app(config_name='dev_config'):
-    # Create an app with the given
-    # configuration.
-    #
-    # config_name: String, config that should be used
+def create_app(dev_mode=True):
+    """
+    Create an app with the given configuration.
+
+    :param dev_mode:bool, if true, dev config will be used
+    :return: Flask Object, the server application.
+    """
 
     app = Flask(__name__)
-    app.config.from_object(get_config(config_name))
+
+    if dev_mode:
+        app.config.from_pyfile('./configs/dev_config.py')
 
     # assign app to the database
     # and create all tables.
@@ -22,9 +26,6 @@ def create_app(config_name='dev_config'):
     # register blueprints
     app.register_blueprint(auth.bp)
     app.register_blueprint(users.bp)
-
-    @app.route('/ping')
-    def pong():
-        return 'pong', 200
+    app.register_blueprint(development.bp)
 
     return app
