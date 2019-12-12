@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 from ..utilities.auth import password_requirements, username_requirements
 from ..database import db, User, check_allowed_characters
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
+bp = Blueprint('dev', __name__, url_prefix='/dev')
 
 
 @bp.route('/create_super_user', methods=['POST'])
