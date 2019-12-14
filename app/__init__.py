@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from .database import db, User
 from .blueprints import auth, users, development
 from werkzeug.security import generate_password_hash
@@ -13,6 +14,7 @@ def create_app(dev_mode=True):
     """
 
     app = Flask(__name__)
+    CORS(app)
 
     if dev_mode:
         app.config.from_pyfile('./configs/dev_config.py')
