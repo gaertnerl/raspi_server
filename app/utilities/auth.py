@@ -1,22 +1,43 @@
 from jwt import ExpiredSignatureError, InvalidTokenError, decode
-from flask import current_app, jsonify
+from flask import current_app, request, jsonify
+from ..database import User
+from functools import wraps
 
 
-def decode_auth_token(token):
+def check_token(f):
     """
-    Decodes the auth token.
+    A decorator that handles all token verification logic.
+    If the token is valid it returns the user the token was
+    assigned to.
 
-    :param token: Encoded jwt token, generated from login route.
-    :return: if correct:    List[True, username of token holder]
-             if incorrect:  List[False]
+    :param f: decorated function
+    :return: token valid:   user object from database
+             token invalid: json object with an error message
     """
-    try:
-        payload = decode(token, current_app.config.get('SECRET_KEY'))
-        return [True, payload['user']]
-    except ExpiredSignatureError:
-        return [False]
-    except InvalidTokenError:
-        return [False]
+    @wraps(f)
+    def decorator(*args, **kwargs):
+
+        token = None
+
+        if 'auth_token' in request.headers:
+            token = request.headers['auth_token']
+        else:
+            return jsonify({'message': 'token is missing'}), 401
+        try:
+            payload = decode(token, current_app.config['SECRET_KEY'])
+            user = User.query.filter_by(username=payload['user']).first()
+
+        except ExpiredSignatureError:
+            return jsonify({'message': 'token expired'}), 401
+        except InvalidTokenError:
+            return jsonify({'message': 'token invalid'}), 401
+        except:
+            return jsonify({'message:' 'unknown error occurred'}), 500
+
+        # pass user to decorated function and execute the function
+        return f(user, *args, **kwargs)
+
+    return decorator
 
 
 def password_requirements(password):
