@@ -13,10 +13,13 @@ def create_super_user():
     :return: ok message
     """
 
+    if User.query.filter_by(username='super').first():
+        return jsonify({'message': 'super user already created'}), 400
+
     super_u = User(
         username='super',
-        password=generate_password_hash('super'),
-        admin=True,)
+        pw_hash=generate_password_hash('super'),
+        admin=True)
 
     db.session.add(super_u)
     db.session.commit()
