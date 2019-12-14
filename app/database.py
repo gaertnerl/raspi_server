@@ -11,7 +11,6 @@ class User(db.Model):
     username = db.Column(db.String(30), unique=True)
     pw_hash = db.Column(db.String(80))
     admin = db.Column(db.Boolean, default=False)
-    master_admin = db.Column(db.Boolean, default=False)
 
 
 def check_allowed_characters(string):
