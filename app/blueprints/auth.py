@@ -85,6 +85,6 @@ def login():
         # return token UTF-8 encoded since it is in bytecode
         return jsonify({'token': token.decode('UTF-8')}), 200
     else:
-        return jsonify({'message:': 'Password and username do not match.'}), 401
+        return jsonify({'message': 'Password and username do not match.'}), 401
 
 
