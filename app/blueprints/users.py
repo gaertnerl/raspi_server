@@ -47,7 +47,7 @@ def get_users(user):
         for user in users_found:
             names.append(user.username)
 
-        return jsonify({'usersnames': names}), 200
+        return jsonify({'usernames': names}), 200
 
     else:
         return jsonify({'message': 'admin status required'}), 403
